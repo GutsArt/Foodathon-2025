@@ -21,7 +21,11 @@ class EcoCropService:
         pprint.pprint(data)
 
         # Убираем NaN вручную на случай, если где-то остались
-        clean_data = {k: (None if pd.isna(v) else v) for k, v in data.items()}
+        data = {k: (None if pd.isna(v) else v) for k, v in data.items()}
+
+        # Убираем ненужные ключи
+        exclude_keys = {"AUTH", "FAMNAME"}
+        clean_data = {k: v for k, v in data.items() if k not in exclude_keys}
 
         # No need
         """
