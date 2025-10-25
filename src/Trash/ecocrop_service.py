@@ -2,9 +2,8 @@ import pandas as pd
 
 class EcoCropService:
     def __init__(self, path: str):
-        # Загружаем CSV в DataFrame
         self.df = pd.read_csv(path, encoding='windows-1252')
-        self.df.columns = self.df.columns.str.strip()  # очищаем названия столбцов
+        self.df.columns = self.df.columns.str.strip()
         self.df.fillna("", inplace=True)
 
     def find_crop(self, name: str):
