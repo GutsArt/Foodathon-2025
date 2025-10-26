@@ -8,8 +8,10 @@ class EcoCropService:
 
     def __init__(self):
         # Читаем CSV
-        self.df = pd.read_csv(ECOCROP_PATH, encoding="Windows-1252")
-        # Приводим все названия к нижнему регистру для ускоренного поиска
+        try:
+            self.df = pd.read_csv(ECOCROP_PATH, encoding="Windows-1252")
+        except FileNotFoundError:
+            raise RuntimeError(f"EcoCrop CSV not found at {ECOCROP_PATH}")        # Приводим все названия к нижнему регистру для ускоренного поиска
         self.df["ScientificName"] = self.df["ScientificName"].astype(str).str.lower()
         self.df["COMNAME"] = self.df["COMNAME"].astype(str).str.lower()
         
