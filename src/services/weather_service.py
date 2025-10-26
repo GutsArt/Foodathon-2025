@@ -9,9 +9,3 @@ def get_weather(city: str):
     response = requests.get(url)
     response.raise_for_status()
     return response.json()
-
-    # data = response.json()
-    # return {
-    #     "temperature": data["main"]["temp"],
-    #     "humidity": data["main"]["humidity"]
-    # }

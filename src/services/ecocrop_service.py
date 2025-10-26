@@ -3,20 +3,31 @@ from config import ECOCROP_PATH
 
 class EcoCropService:
     """Сервис для работы с базой FAO EcoCrop."""
+    
+    DELETE_COLUMNS = {"AUTH", "FAMNAME"}
 
     def __init__(self):
         # Читаем CSV
         self.df = pd.read_csv(ECOCROP_PATH, encoding="Windows-1252")
+        # Приводим все названия к нижнему регистру для ускоренного поиска
+        self.df["ScientificName"] = self.df["ScientificName"].astype(str).str.lower()
+        self.df["COMNAME"] = self.df["COMNAME"].astype(str).str.lower()
+        
         # Заменяем NaN на None, чтобы JSON мог сериализовать
         self.df = self.df.where(pd.notnull(self.df), None)
-        self.delete_columns = {"AUTH", "FAMNAME"}
 
 
     def get_crop(self, name: str) -> dict | None:
         """Ищет культуру по научному названию (ScientificName)."""
-        crop = self.df[self.df["ScientificName"].str.contains(name, case=False, na=False)]
-        if crop.empty:
+        if not name:
             return None
+        name = name.lower().strip()
+        
+        crop = self.df[self.df["ScientificName"].str.contains(name, na=False)]
+        if crop.empty:
+            crop = self.df[self.df["COMNAME"].str.contains(name, na=False)]
+            if crop.empty:
+                return None
         # Преобразуем строку в словарь без NaN
         data = crop.iloc[0].to_dict()
         import pprint
@@ -26,9 +37,10 @@ class EcoCropService:
         clean_data = {
             k: (None if pd.isna(v) else v)
             for k, v in data.items()
-            if k not in self.delete_columns
+            if k not in self.DELETE_COLUMNS
         }
 
+        return clean_data
         
         """ # No need
         EcoPortCode - номмер записи в базе EcoCrop
@@ -106,7 +118,6 @@ class EcoCropService:
         - GMIN / GMAX — Продолжительность вегетационного периода (в днях)
         """
 
-        return clean_data
 
 
 # Создаём один экземпляр, чтобы не читать CSV каждый раз
