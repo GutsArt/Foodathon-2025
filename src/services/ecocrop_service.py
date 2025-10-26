@@ -9,7 +9,9 @@ class EcoCropService:
         self.df = pd.read_csv(ECOCROP_PATH, encoding="Windows-1252")
         # Заменяем NaN на None, чтобы JSON мог сериализовать
         self.df = self.df.where(pd.notnull(self.df), None)
-    
+        self.delete_columns = {"AUTH", "FAMNAME"}
+
+
     def get_crop(self, name: str) -> dict | None:
         """Ищет культуру по научному названию (ScientificName)."""
         crop = self.df[self.df["ScientificName"].str.contains(name, case=False, na=False)]
@@ -21,14 +23,14 @@ class EcoCropService:
         pprint.pprint(data)
 
         # Убираем NaN вручную на случай, если где-то остались
-        data = {k: (None if pd.isna(v) else v) for k, v in data.items()}
+        clean_data = {
+            k: (None if pd.isna(v) else v)
+            for k, v in data.items()
+            if k not in self.delete_columns
+        }
 
-        # Убираем ненужные ключи
-        exclude_keys = {"AUTH", "FAMNAME"}
-        clean_data = {k: v for k, v in data.items() if k not in exclude_keys}
-
-        # No need
-        """
+        
+        """ # No need
         EcoPortCode - номмер записи в базе EcoCrop
         AUTH - Автор
 
