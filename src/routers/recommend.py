@@ -2,6 +2,7 @@ import logging
 from fastapi import APIRouter, Query
 from services.ecocrop_service import ecocrop_service
 from services.weather_service import get_weather
+from datetime import datetime
 
 # === ЛОГИРОВАНИЕ С ЦВЕТАМИ В КОНСОЛИ ===
 class ColorFormatter(logging.Formatter):
@@ -100,22 +101,100 @@ def check_crop_suitability(
         "crop": crop,
         "suitable": suitable,
         "details": results,
+        # === OpenWeather Data ===
         "weather": {
-            # "coord": weather.get("coord"),
-            "weather": weather.get("weather"),
-            "main": weather.get("main"),
+            # "coord": weather.get("coord"), # lon, lat
+            # id: int, main: Clouds, description: few clouds, icon: 02n
+            "weather": weather.get("weather"), 
+            # temp, feels_like, temp_min, temp_max, pressure, humidity, sea_level, grand_level
+            "main": weather.get("main"), 
+            # speed, deg, +- gust
             "wind": weather.get("wind"),
-            "clouds": weather.get("clouds"),
+            
+            "clouds": weather.get("clouds"), # %
             "rain": weather.get("rain"), # +-
             "snow": weather.get("snow"), # +-
 
-            "sys": weather.get("sys"),
-            # "name": weather.get("name"),
+            "sys": {
+                "country": weather.get("sys", {}).get("country"), # DE
+                "sunrise": datetime.utcfromtimestamp(weather.get("sys", {}).get("sunrise")).strftime('%Y-%m-%d %H:%M'),
+                "sunset": datetime.utcfromtimestamp(weather.get("sys", {}).get("sunset")).strftime('%Y-%m-%d %H:%M'),
+            },
+            # "timezone": weather.get("timezone") # seconds shift from UTC     
         },
-        "requirements": {
-            "TMIN": tmin,
-            "TMAX": tmax,
-            "RMIN": rmin,
-            "RMAX": rmax,
+
+        "crop_info": {
+            "ScientificName": crop_data.get("ScientificName"),
+            # Морфология и жизненный цикл
+            "LIFO": crop_data.get("LIFO"), # форма растения 
+            "HABIT": crop_data.get("HABIT"), # тип растения
+            # +++
+            "LISPA": crop_data.get("LISPA"), # срок жизни annual/biennial/perennial
+            "PHYS": crop_data.get("PHYS"),   # физические свойства
+
+            # 🧑‍🌾 Использование и выращивание
+            "CAT": crop_data.get("CAT"),       # Категория культуры
+            "PLAT": crop_data.get("PLAT"),     # Маштаб выращивания
+            "PROSY": crop_data.get("PROSY"), # Сферы применения
+            "GMIN": crop_data.get("GMIN"),   # Продолжительность вегетационного периода мин
+            "GMAX": crop_data.get("GMAX"),   # Продолжительность вегетационного периода макс
+
+            # 📸 Фотопериод
+            "PHOTO": crop_data.get("PHOTO"),     # фотопериодические требования растения
+
+            # 🌡️ Температура и 🌧️ Осадки 
+            "TOPMN": crop_data.get("TOPMN"), # оптимальная температура мин
+            "TOPMX": crop_data.get("TOPMX"), # оптимальная температура макс
+            "ROPMN": crop_data.get("ROPMN"), # оптимальные осадки мин
+            "ROPMX": crop_data.get("ROPMX"), # оптимальные осадки макс
+            "TMIN": tmin,  # минимальная температура
+            "TMAX": tmax,   # максимальная температура
+            "RMIN": rmin,   # минимальные осадки
+            "RMAX": rmax,   # максимальные осадки
+            
+            "PHMIN": crop_data.get("PHMIN"),   # Минимальное значение pH почвы
+            "PHMAX": crop_data.get("PHMAX"),   # Максимальное значение pH почвы
+            "PHOPMN": crop_data.get("PHOPMN"), # Оптимальное значение pH почвы мин
+            "PHOPMX": crop_data.get("PHOPMX"), # Оптимальное значение pH почвы макс
+
+            # 🌍 География
+            "LATOPMN": crop_data.get("LATOPMN"), # Оптимальная широта мин
+            "LATOPMX": crop_data.get("LATOPMX"), # Оптимальная широта макс
+            "LATMN": crop_data.get("LATMN"),     # Абсолютный диапазон широты мин
+            "LATMX": crop_data.get("LATMX"),     # Абсолютный диапазон широты макс
+            "ALTMX": crop_data.get("ALTMX"),     # Максимальная высота над уровнем моря (м)
+                
+            # ☀️ Свет
+            "LIOPMN": crop_data.get("LIOPMN"),  # Оптимальный минимум освещённости
+            "LIOPMX": crop_data.get("LIOPMX"),  # Оптимальный максимум освещённости
+            "LIMN": crop_data.get("LIMN"),      # Допустимый минимум освещённости
+            "LIMX": crop_data.get("LIMX"),      # Допустимый максимум освещённости
+
+            # 🧱 Почва
+            "DEP": crop_data.get("DEP"),        # Оптимальная глубина почвы
+            "DEPR": crop_data.get("DEPR"),      # Допустимая глубина почвы
+            "TEXT": crop_data.get("TEXT"),      # Оптимальная текстура почвы
+            "TEXTR": crop_data.get("TEXTR"),    # Допустимая текстура почвы
+            "FER": crop_data.get("FER"),        # Требуемое плодородие
+            "FERR": crop_data.get("FERR"),      # Допустимое плодородие
+            "SAL": crop_data.get("SAL"),        # Устойчивость к солёности
+            "SALR": crop_data.get("SALR"),      # Допустимая солёность
+            "DRA": crop_data.get("DRA"),        # Требования к дренажу
+            "DRAR": crop_data.get("DRAR"),      # Допустимый дренаж / засуха
+
+            # ☠️ Токсичность
+            "TOX": crop_data.get("TOX"),        # Устойчивость к токсичным условиям
+            "TOXR": crop_data.get("TOXR"),      # Допустимая токсичность
+
+            # 📸 Фотопериод
+            "PHOTO": crop_data.get("PHOTO"),    # Требуемая длина дня
+
+            # 🌦️ Климат
+            "CLIZ": crop_data.get("CLIZ"),      # Климатические зоны по Кёппену
+
+            # 🧬 Адаптация
+            "ABITOL": crop_data.get("ABITOL"),  # Толерантность к абиотическим стрессам
+            "ABISUS": crop_data.get("ABISUS"),  # Основной абиотический фактор
+            "INTRI": crop_data.get("INTRI"),    # История интродукции
         },
     }
