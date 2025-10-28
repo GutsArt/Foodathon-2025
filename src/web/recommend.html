@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agro Intelligence — Проверка пригодности</title>
+  <title>Agro Intelligence — Crop Suitability Check</title>
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
@@ -76,18 +76,18 @@
 </head>
 <body>
   <h1>🌱 Agro Intelligence</h1>
-  <p>Проверьте, подходят ли погодные условия для выращивания выбранной культуры</p>
+  <p>Check if the current weather conditions are suitable for growing your chosen crop</p>
 
   <form id="checkForm">
-    <input type="text" id="city" placeholder="Введите город (например, Paris)" required />
-    <input type="text" id="crop" placeholder="Введите культуру (например, wheat)" required />
-    <button type="submit">Проверить</button>
+    <input type="text" id="city" placeholder="Enter a city (e.g., Paris)" required />
+    <input type="text" id="crop" placeholder="Enter a crop (e.g., wheat)" required />
+    <button type="submit">Check</button>
   </form>
 
   <div class="result" id="result" style="display:none;"></div>
 
   <footer>
-    Agro Intelligence API © 2025 | Основано на FAO EcoCrop и OpenWeather
+    Agro Intelligence API © 2025 | Based on FAO EcoCrop and OpenWeather
   </footer>
 
   <script>
@@ -101,7 +101,7 @@
       const crop = document.getElementById("crop").value.trim();
 
       resultDiv.style.display = "block";
-      resultDiv.innerHTML = "<em>Загрузка...</em>";
+      resultDiv.innerHTML = "<em>Loading...</em>";
 
       try {
         const res = await fetch(`/recommend/check?city=${encodeURIComponent(city)}&crop=${encodeURIComponent(crop)}`);
@@ -113,24 +113,24 @@
         }
 
         const status = data.suitable ? 
-          `<p class="ok">✅ Условия подходят для выращивания ${data.crop}!</p>` :
-          `<p class="bad">⚠️ Условия НЕ подходят для выращивания ${data.crop}.</p>`;
+          `<p class="ok">✅ The conditions are suitable for growing ${data.crop}!</p>` :
+          `<p class="bad">⚠️ The conditions are NOT suitable for growing ${data.crop}.</p>`;
 
         const details = data.details.map(d => `<li>${d}</li>`).join("");
         const weather = data.weather.main ? `
           <div class="weather">
-            <b>Температура:</b> ${data.weather.main.temp}°C<br>
-            <b>Влажность:</b> ${data.weather.main.humidity}%<br>
-            <b>Облачность:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
+            <b>Temperature:</b> ${data.weather.main.temp}°C<br>
+            <b>Humidity:</b> ${data.weather.main.humidity}%<br>
+            <b>Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
           </div>` : "";
 
         const reqs = `
           <div class="reqs">
-            <b>Требования культуры:</b><br>
+            <b>Crop Requirements:</b><br>
             🌡 TMIN: ${data.requirements.TMIN}°C<br>
             🌡 TMAX: ${data.requirements.TMAX}°C<br>
-            💧 RMIN: ${data.requirements.RMIN} мм/год<br>
-            💧 RMAX: ${data.requirements.RMAX} мм/год
+            💧 RMIN: ${data.requirements.RMIN} mm/year<br>
+            💧 RMAX: ${data.requirements.RMAX} mm/year
           </div>`;
 
         resultDiv.innerHTML = `
@@ -141,7 +141,7 @@
           ${reqs}
         `;
       } catch (err) {
-        resultDiv.innerHTML = `<p class="bad">Ошибка при запросе: ${err.message}</p>`;
+        resultDiv.innerHTML = `<p class="bad">Request error: ${err.message}</p>`;
       }
     });
   </script>

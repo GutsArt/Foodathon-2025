@@ -73,15 +73,16 @@ def check_crop_suitability(
     logging.info(f"RMIN: {rmin} мм/год, RMAX: {rmax} мм/год")
 
     # Проверяем соответствие
+    suitable = False
     results = []
     if tmin and tmax:
         if temp < tmin:
-            results.append(f"Слишком холодно (текущая {temp}°C, нужно ≥ {tmin}°C)")
+            results.append(f"Too cold (current {temp}°C, needs ≥ {tmin}°C)")
         elif temp > tmax:
-            results.append(f"Слишком жарко (текущая {temp}°C, нужно ≤ {tmax}°C)")
+            results.append(f"Too hot (current {temp}°C, needs ≤ {tmax}°C)")
         else:
-            results.append(f"Температура подходит ({temp}°C ∈ [{tmin}, {tmax}]°C)")
-
+            results.append(f"Temperature is suitable ({temp}°C ∈ [{tmin}, {tmax}]°C)")
+            suitable = True
     """# Проверяем осадки за год NASA POWER
     if rmin and rmax:
         if rain < rmin:
@@ -91,10 +92,9 @@ def check_crop_suitability(
         else:
             results.append(f"Осадки в норме ({rain} мм ∈ [{rmin}, {rmax}] мм)")
     """
-    
-    # Общий вывод
-    suitable = not any("Слишком" in r or "Недостаточно" in r for r in results)
 
+
+    # Общий вывод
     return {
         "city": city, # weather.get("name")
         "crop": crop,

@@ -28,3 +28,7 @@ def recommend_ui():
     Отображает веб-интерфейс для проверки пригодности условий выращивания.
     """
     return FileResponse("web/recommend.html")
+
+@app.get("/favicon.ico")
+def favicon():
+    return FileResponse("web/favicon.ico")
