@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agro Intelligence</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f8f5;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 0.3em;
+      text-align: center;
+    }
+
+    p, label {
+      font-size: 16px;
+      color: #444;
+    }
+
+    /* Форма */
+    form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    input[type="text"] {
+      padding: 10px 14px;
+      border: 2px solid #a5d6a7;
+      border-radius: 8px;
+      font-size: 15px;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #43a047;
+    }
+
+    button {
+      background: #43a047;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #2e7d32;
+    }
+
+    /* Карточки */
+    .block {
+      width: 90%;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.08);
+      margin-top: 15px;
+      overflow: hidden;
+    }
+
+    .block-header {
+      background: #43a047;
+      color: white;
+      padding: 12px 16px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .block-header:hover {
+      background: #2e7d32;
+    }
+
+    .block-content {
+      display: none;
+      padding: 16px;
+      line-height: 1.6;
+    }
+
+    .open .block-content {
+      display: block;
+    }
+
+    .arrow {
+      transition: transform 0.3s;
+    }
+
+    .open .arrow {
+      transform: rotate(90deg);
+    }
+
+    /* Резюме погоды */
+    .weather-summary {
+      background: #e8f5e9;
+      border-left: 5px solid #4caf50;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      width: 90%;
+      max-width: 800px;
+    }
+
+    .weather-summary h3 {
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    .weather-summary ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .weather-summary li {
+      margin: 5px 0;
+    }
+
+    /* Плавное появление */
+    .fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌾 Agro Intelligence</h1>
+  <p>Enter a city and crop to check if weather conditions are suitable:</p>
+
+  <form id="checkForm">
+    <input type="text" id="city" placeholder="Enter a city (e.g., Hamburg)" required />
+    <input type="text" id="crop" placeholder="Enter a crop (e.g., Wheat)" required />
+    <button type="submit">Check</button>
+  </form>
+
+  <div id="results" class="fade-in"></div>
+
+  <script>
+    const form = document.getElementById('checkForm');
+    const results = document.getElementById('results');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const city = document.getElementById('city').value.trim().toLowerCase();
+      const crop = document.getElementById('crop').value.trim().toLowerCase();
+
+      // Очистка перед выводом
+      results.innerHTML = '';
+
+      if (city === 'hamburg' && crop === 'wheat') {
+        results.innerHTML = `
+          <div class="weather-summary fade-in">
+            <h3>✅ The weather conditions are suitable for this crop.</h3>
+            <ul>
+              <li>🌡️ Temperature is within optimal range (5–27°C). Current: 9.87°C.</li>
+              <li>💧 Annual rainfall is sufficient (300–1600 mm).</li>
+              <li>💨 Humidity level is favorable (88%).</li>
+            </ul>
+          </div>
+
+          <div class="block open fade-in">
+            <div class="block-header">🌤 Weather Information (Hamburg) <span class="arrow">▶</span></div>
+            <div class="block-content">
+              <b>Condition:</b> Rain (light rain)<br>
+              <b>Temperature:</b> 9.87 °C (feels like 6.32 °C)<br>
+              <b>Humidity:</b> 88 %<br>
+              <b>Pressure:</b> 1002 hPa<br>
+              <b>Cloudiness:</b> 75 %<br>
+              <b>Wind:</b> 8.75 m/s, direction 250°<br>
+              <b>Rain (1h):</b> 0.13 mm<br>
+              <b>Sunrise:</b> 07:31 (local time)<br>
+              <b>Sunset:</b> 16:15 (local time)
+            </div>
+          </div>
+
+          <div class="block fade-in">
+            <div class="block-header">🌱 Crop Information (Wheat) <span class="arrow">▶</span></div>
+            <div class="block-content">
+              <b>Scientific Name:</b> Triticum aestivum<br>
+              <b>Common Names:</b> bread wheat, blé, alkamh, sinde, trigo, wheat, etc.<br>
+              <b>Life Form:</b> Grass; Erect Annual<br>
+              <b>Photosynthesis:</b> C3 (neutral/long day 12–14 h)<br>
+              <b>Optimal Temperature:</b> 15 – 23 °C<br>
+              <b>Min/Max Temperature:</b> 5 – 27 °C<br>
+              <b>Rainfall Range:</b> 300 – 1600 mm/year<br>
+              <b>Soil Depth:</b> 50–150 cm (medium)<br>
+              <b>pH Range:</b> 5.5 – 8.5<br>
+              <b>Light:</b> Very bright<br>
+              <b>Altitude Max:</b> 4500 m<br>
+              <b>Fertility:</b> High<br>
+              <b>Drainage:</b> Well-drained (tolerates dry spells)<br>
+              <b>Category:</b> cereals & pseudocereals, forage/pasture, medicinals<br>
+              <b>Climate Zones:</b> tropical wet/dry, subtropical humid/dry, temperate oceanic/continental<br>
+              <b>Production System:</b> Large scale/commercial<br>
+              <b>Growing Period:</b> 90 – 250 days
+            </div>
+          </div>
+        `;
+      } else {
+        results.innerHTML = `<div class="weather-summary fade-in" style="border-left:5px solid #e53935; background:#ffebee;">
+          <h3>❌ Data for "${city}" and "${crop}" not available.</h3>
+          <p>Please try <b>Hamburg</b> and <b>Wheat</b> for a working example.</p>
+        </div>`;
+      }
+
+      // Переключение блоков
+      document.querySelectorAll('.block-header').forEach(header => {
+        header.addEventListener('click', () => {
+          header.parentElement.classList.toggle('open');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
