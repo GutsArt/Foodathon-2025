@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agro Intelligence — Проверка пригодности</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f8f5;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 0.5em;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    input, button {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #43a047;
+      color: white;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #2e7d32;
+    }
+    .result {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .ok {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .bad {
+      color: #c62828;
+      font-weight: bold;
+    }
+    .weather, .reqs {
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌱 Agro Intelligence</h1>
+  <p>Проверьте, подходят ли погодные условия для выращивания выбранной культуры</p>
+
+  <form id="checkForm">
+    <input type="text" id="city" placeholder="Введите город (например, Paris)" required />
+    <input type="text" id="crop" placeholder="Введите культуру (например, wheat)" required />
+    <button type="submit">Проверить</button>
+  </form>
+
+  <div class="result" id="result" style="display:none;"></div>
+
+  <footer>
+    Agro Intelligence API © 2025 | Основано на FAO EcoCrop и OpenWeather
+  </footer>
+
+  <script>
+    const form = document.getElementById("checkForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const city = document.getElementById("city").value.trim();
+      const crop = document.getElementById("crop").value.trim();
+
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = "<em>Загрузка...</em>";
+
+      try {
+        const res = await fetch(`/recommend/check?city=${encodeURIComponent(city)}&crop=${encodeURIComponent(crop)}`);
+        const data = await res.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `<p class="bad">❌ ${data.error}</p>`;
+          return;
+        }
+
+        const status = data.suitable ? 
+          `<p class="ok">✅ Условия подходят для выращивания ${data.crop}!</p>` :
+          `<p class="bad">⚠️ Условия НЕ подходят для выращивания ${data.crop}.</p>`;
+
+        const details = data.details.map(d => `<li>${d}</li>`).join("");
+        const weather = data.weather.main ? `
+          <div class="weather">
+            <b>Температура:</b> ${data.weather.main.temp}°C<br>
+            <b>Влажность:</b> ${data.weather.main.humidity}%<br>
+            <b>Облачность:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
+          </div>` : "";
+
+        const reqs = `
+          <div class="reqs">
+            <b>Требования культуры:</b><br>
+            🌡 TMIN: ${data.requirements.TMIN}°C<br>
+            🌡 TMAX: ${data.requirements.TMAX}°C<br>
+            💧 RMIN: ${data.requirements.RMIN} мм/год<br>
+            💧 RMAX: ${data.requirements.RMAX} мм/год
+          </div>`;
+
+        resultDiv.innerHTML = `
+          <h2>${data.city}</h2>
+          ${status}
+          <ul>${details}</ul>
+          ${weather}
+          ${reqs}
+        `;
+      } catch (err) {
+        resultDiv.innerHTML = `<p class="bad">Ошибка при запросе: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -3,11 +3,29 @@ from fastapi import APIRouter, Query
 from services.ecocrop_service import ecocrop_service
 from services.weather_service import get_weather
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="\033[92m%(asctime)s [%(levelname)s]\033[0m %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+# === ЛОГИРОВАНИЕ С ЦВЕТАМИ В КОНСОЛИ ===
+class ColorFormatter(logging.Formatter):
+    GREEN = "\033[92m"
+    RED = "\033[31m"
+    RESET = "\033[0m"
+
+    def format(self, record):
+        # Если уровень выше INFO — красный цвет
+        if record.levelno > logging.INFO:
+            color = self.RED
+        else:
+            color = self.GREEN
+
+        log_format = f"{color}%(asctime)s [%(levelname)s]{self.RESET} %(message)s"
+        formatter = logging.Formatter(log_format, "%Y-%m-%d %H:%M:%S")
+        return formatter.format(record)
+
+
+# Настройка логирования
+handler = logging.StreamHandler()
+handler.setFormatter(ColorFormatter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+
 
 router = APIRouter()
 
@@ -20,11 +38,12 @@ def check_crop_suitability(
     Проверяет, подходят ли текущие погодные условия в городе для выращивания выбранной культуры.
     """
     weather = get_weather(city)
-    if not weather:
-        return {"error": f"Не удалось получить данные погоды для города '{city}'."}
+    if not weather or ("error" in weather):
+        return weather if isinstance(weather, dict) else {"error": f"Unable to retrieve weather data for city '{city}'."}
+
     crop_data = ecocrop_service.get_crop(crop)
     if not crop_data:
-        return {"error": f"Культура '{crop}' не найдена в базе EcoCrop."}
+        return {"error": f"Crop '{crop}' not found in EcoCrop database."}
 
     # --- Извлечение нужных параметров погоды ---
     main_data = weather.get("main", {})
