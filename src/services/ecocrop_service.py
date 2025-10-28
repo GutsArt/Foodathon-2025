@@ -4,7 +4,15 @@ from config import ECOCROP_PATH
 class EcoCropService:
     """Сервис для работы с базой FAO EcoCrop."""
     
-    DELETE_COLUMNS = {"AUTH", "FAMNAME"}
+    DELETE_COLUMNS = {
+        "EcoPortCode",   # внутренний ID, не используется
+        "SYNO",          # синонимы
+        "COMNAME",       # народные названия
+        "KTMPR",         # неизвестный параметр
+        "KTMP",          # неизвестный параметр
+        "AUTH",          # автор описания (если бы был)
+        "FAMNAME"        # семейство растения (если бы было)
+    }
 
     def __init__(self):
         # Читаем CSV
@@ -32,8 +40,10 @@ class EcoCropService:
                 return None
         # Преобразуем строку в словарь без NaN
         data = crop.iloc[0].to_dict()
+
+        # === PPRINT ===
         import pprint
-        pprint.pprint(data)
+        print(f"\033[34m{pprint.pformat(data)}\033[0m")
 
         # Убираем NaN вручную на случай, если где-то остались
         clean_data = {
