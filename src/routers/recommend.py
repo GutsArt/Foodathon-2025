@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter, Query
 from services.ecocrop_service import ecocrop_service
 from services.weather_service import get_weather
-from datetime import datetime
+from datetime import datetime # sunrise, sunset
 
 # === ЛОГИРОВАНИЕ С ЦВЕТАМИ В КОНСОЛИ ===
 class ColorFormatter(logging.Formatter):
@@ -74,25 +74,52 @@ def check_crop_suitability(
     logging.info(f"RMIN: {rmin} мм/год, RMAX: {rmax} мм/год")
 
     # Проверяем соответствие
-    suitable = False
-    results = []
+    details = []
+
+    temp_ok = False
     if tmin and tmax:
+        details.append("")
         if temp < tmin:
-            results.append(f"Too cold (current {temp}°C, needs ≥ {tmin}°C)")
+            details.append(f"Too cold (current {temp}°C, needs ≥ {tmin}°C)")
         elif temp > tmax:
-            results.append(f"Too hot (current {temp}°C, needs ≤ {tmax}°C)")
+            details.append(f"Too hot (current {temp}°C, needs ≤ {tmax}°C)")
         else:
-            results.append(f"Temperature is suitable ({temp}°C ∈ [{tmin}, {tmax}]°C)")
-            suitable = True
+            details.append(f"Temperature is suitable ({temp}°C ∈ [{tmin}, {tmax}]°C)")
+            temp_ok = True
+
+    rain_ok = False
+    if rmin and rmax:
+        # OpenWeather gives short-term rain; we just inform about range
+        rain_ok = True  # Rain check skipped for now (needs annual data)
+        details.append(f"💧 Annual rainfall is sufficient ({rmin}–{rmax} mm).")      
+   
+   
     """# Проверяем осадки за год NASA POWER
     if rmin and rmax:
         if rain < rmin:
-            results.append(f"Недостаточно осадков ({rain} мм, нужно ≥ {rmin} мм)")
+            details.append(f"Недостаточно осадков ({rain} мм, нужно ≥ {rmin} мм)")
         elif rain > rmax:
-            results.append(f"Слишком много осадков ({rain} мм, нужно ≤ {rmax} мм)")
+            details.append(f"Слишком много осадков ({rain} мм, нужно ≤ {rmax} мм)")
         else:
-            results.append(f"Осадки в норме ({rain} мм ∈ [{rmin}, {rmax}] мм)")
+            details.append(f"Осадки в норме ({rain} мм ∈ [{rmin}, {rmax}] мм)")
     """
+
+    humidity_ok = False
+    if humidity is not None:
+        if 40 <= humidity <= 90:
+            humidity_ok = True
+            details.append(f"💨 Humidity level is favorable ({humidity}%).")
+        else:
+            details.append(f"💨 Humidity level is not ideal ({humidity}%).")
+
+
+    suitable = temp_ok and rain_ok and humidity_ok
+    # logging.info(f"=== SUITABILITY RESULT: {'SUITABLE' if suitable else 'NOT SUITABLE'} ===\n {suitable}")
+
+    # if suitable:
+    #     summary = "✅ The weather conditions are suitable for this crop."
+    # else:
+    #     summary = "⚠️ The current conditions are not fully suitable for optimal growth."
 
 
     # Общий вывод
@@ -100,7 +127,7 @@ def check_crop_suitability(
         "city": city, # weather.get("name")
         "crop": crop,
         "suitable": suitable,
-        "details": results,
+        "details": details,
         # === OpenWeather Data ===
         "weather": {
             # "coord": weather.get("coord"), # lon, lat
