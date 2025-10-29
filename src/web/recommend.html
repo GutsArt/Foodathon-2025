@@ -62,11 +62,29 @@
       color: #c62828;
       font-weight: bold;
     }
-    .weather, .reqs {
+    /* Weather and Requirements */
+    /* .weather {
       margin-top: 10px;
       font-size: 15px;
       line-height: 1.4;
+    } */
+    /* EcoCrop Information */
+    .weather, .ecocrop {
+      margin-top: 15px;
+      background: #f1f8e9;
+      border-left: 4px solid #66bb6a;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 15px;
     }
+    .ecocrop h3 {
+      margin-top: 0;
+      color: #2e7d32;
+    }
+    .ecocrop p {
+      margin: 4px 0;
+    }
+
     footer {
       margin-top: 40px;
       font-size: 14px;
@@ -119,26 +137,36 @@
         const details = data.details.map(d => `<li>${d}</li>`).join("");
         const weather = data.weather.main ? `
           <div class="weather">
+            <h3>🌤 Weather Information</h3>
             <b>Temperature:</b> ${data.weather.main.temp}°C<br>
             <b>Humidity:</b> ${data.weather.main.humidity}%<br>
             <b>Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
           </div>` : "";
 
-        const reqs = `
-          <div class="reqs">
-            <b>Crop crop_info:</b><br>
-            🌡 TMIN: ${data.crop_info.TMIN}°C<br>
-            🌡 TMAX: ${data.crop_info.TMAX}°C<br>
-            💧 RMIN: ${data.crop_info.RMIN} mm/year<br>
-            💧 RMAX: ${data.crop_info.RMAX} mm/year
-          </div>`;
+        const eco = data.crop_info ? `
+          <div class="ecocrop">
+            <h3>🌾 EcoCrop Information</h3>
+            <p><b>Scientific Name:</b> ${data.crop_info.ScientificName || "N/A"}</p>
+            <p><b>Category:</b> ${data.crop_info.CAT || "N/A"}</p>
+            <p><b>Growth Type:</b> ${data.crop_info.LISPA || "N/A"} | <b>Plant Type:</b> ${data.crop_info.PLAT || "N/A"}</p>
+            <p><b>Optimal Temperature:</b> ${data.crop_info.TOPMN}–${data.crop_info.TOPMX}°C</p>
+            <p><b>Optimal Rainfall:</b> ${data.crop_info.ROPMN}–${data.crop_info.ROPMX} mm/year</p>
+            <p><b>Soil Type:</b> ${data.crop_info.TEXT || "N/A"}</p>
+            <p><b>Drainage:</b> ${data.crop_info.DRA || "N/A"}</p>
+            <p><b>Soil pH:</b> ${data.crop_info.PHOPMN}–${data.crop_info.PHOPMX}</p>
+            <p><b>Fertility Requirement:</b> ${data.crop_info.FER || "N/A"}</p>
+            <p><b>Climate Zones:</b> ${data.crop_info.CLIZ || "N/A"}</p>
+            <p><b>Growth Duration:</b> ${data.crop_info.GMIN}–${data.crop_info.GMAX} days</p>
+          </div>
+        ` : "";
+
 
         resultDiv.innerHTML = `
           <h2>${data.city}</h2>
           ${status}
           <ul>${details}</ul>
           ${weather}
-          ${reqs}
+          ${eco}
         `;
       } catch (err) {
         resultDiv.innerHTML = `<p class="bad">Request error: ${err.message}</p>`;

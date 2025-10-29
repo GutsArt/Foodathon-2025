@@ -78,13 +78,12 @@ def check_crop_suitability(
 
     temp_ok = False
     if tmin and tmax:
-        details.append("")
         if temp < tmin:
-            details.append(f"Too cold (current {temp}°C, needs ≥ {tmin}°C)")
+            details.append(f"🥶 Too cold (current {temp}°C, needs ≥ {tmin}°C)")
         elif temp > tmax:
-            details.append(f"Too hot (current {temp}°C, needs ≤ {tmax}°C)")
+            details.append(f"🔥 Too hot (current {temp}°C, needs ≤ {tmax}°C)")
         else:
-            details.append(f"Temperature is suitable ({temp}°C ∈ [{tmin}, {tmax}]°C)")
+            details.append(f"✅ Temperature is suitable ({temp}°C ∈ [{tmin}, {tmax}]°C)")
             temp_ok = True
 
     rain_ok = False
@@ -115,6 +114,7 @@ def check_crop_suitability(
 
     suitable = temp_ok and rain_ok and humidity_ok
     # logging.info(f"=== SUITABILITY RESULT: {'SUITABLE' if suitable else 'NOT SUITABLE'} ===\n {suitable}")
+
 
     # if suitable:
     #     summary = "✅ The weather conditions are suitable for this crop."
