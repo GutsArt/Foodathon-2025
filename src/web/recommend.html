@@ -135,13 +135,34 @@
           `<p class="bad">⚠️ The conditions are NOT suitable for growing ${data.crop}.</p>`;
 
         const details = data.details.map(d => `<li>${d}</li>`).join("");
+        // const weather = data.weather.main ? `
+        //   <div class="weather">
+        //     <h3>🌤 Weather Information</h3>
+        //     <b>Temperature:</b> ${data.weather.main.temp}°C<br>
+        //     <b>Humidity:</b> ${data.weather.main.humidity}%<br>
+        //     <b>Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
+        //   </div>` : "";
         const weather = data.weather.main ? `
           <div class="weather">
             <h3>🌤 Weather Information</h3>
-            <b>Temperature:</b> ${data.weather.main.temp}°C<br>
-            <b>Humidity:</b> ${data.weather.main.humidity}%<br>
-            <b>Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
-          </div>` : "";
+            <p><b>🌡 Temperature:</b> ${data.weather.main.temp}°C (feels like ${data.weather.main.feels_like}°C)</p>
+            <p><b>💧 Humidity:</b> ${data.weather.main.humidity}%</p>
+            <p><b>🌬 Wind:</b> ${data.weather.wind.speed} m/s, direction ${data.weather.wind.deg}°</p>
+            <p><b>☁️ Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%</p>
+            ${data.weather.rain ? `<p><b>🌦 Rain (last 1h):</b> ${data.weather.rain["1h"] || data.weather.rain["3h"] || "—"} mm</p>` : ""}
+            ${data.weather.snow ? `<p><b>❄ Snow (last 1h):</b> ${data.weather.snow["1h"] || data.weather.snow["3h"] || "—"} mm</p>` : ""}
+            <p><b>🌡 Pressure:</b> ${data.weather.main.pressure} hPa</p>
+            <p><b>🌅 Sunrise:</b> ${data.weather.sys.sunrise}</p>
+            <p><b>🌇 Sunset:</b> ${data.weather.sys.sunset}</p>
+            <p><b>📍 Country:</b> ${data.weather.sys.country || "N/A"}</p>
+            ${data.weather.weather && data.weather.weather[0] ? 
+              `<p><b>🌤 Conditions:</b> ${data.weather.weather[0].description}</p>
+              <!-- <img src="https://openweathermap.org/img/wn/${data.weather.weather[0].icon}@2x.png" 
+                    alt="${data.weather.weather[0].description}" style="vertical-align:middle;"> -->` 
+            : ""}
+          </div>
+        ` : "";
+
 
         const eco = data.crop_info ? `
           <div class="ecocrop">
