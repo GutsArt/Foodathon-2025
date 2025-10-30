@@ -77,6 +77,13 @@
       border-radius: 8px;
       font-size: 15px;
     }
+    .weather img {       
+      width: 28px; 
+      height: 28px; 
+      vertical-align: middle; 
+      margin-right: -5px;
+    }
+
     .ecocrop h3 {
       margin-top: 0;
       color: #2e7d32;
@@ -135,13 +142,6 @@
           `<p class="bad">⚠️ The conditions are NOT suitable for growing ${data.crop}.</p>`;
 
         const details = data.details.map(d => `<li>${d}</li>`).join("");
-        // const weather = data.weather.main ? `
-        //   <div class="weather">
-        //     <h3>🌤 Weather Information</h3>
-        //     <b>Temperature:</b> ${data.weather.main.temp}°C<br>
-        //     <b>Humidity:</b> ${data.weather.main.humidity}%<br>
-        //     <b>Cloudiness:</b> ${data.weather.clouds ? data.weather.clouds.all : 0}%<br>
-        //   </div>` : "";
         const weather = data.weather.main ? `
           <div class="weather">
             <h3>🌤 Weather Information</h3>
@@ -156,9 +156,11 @@
             <p><b>🌇 Sunset:</b> ${data.weather.sys.sunset}</p>
             <p><b>📍 Country:</b> ${data.weather.sys.country || "N/A"}</p>
             ${data.weather.weather && data.weather.weather[0] ? 
-              `<p><b>🌤 Conditions:</b> ${data.weather.weather[0].description}</p>
-              <!-- <img src="https://openweathermap.org/img/wn/${data.weather.weather[0].icon}@2x.png" 
-                    alt="${data.weather.weather[0].description}" style="vertical-align:middle;"> -->` 
+              `<p><b>
+                  <img src="https://openweathermap.org/img/wn/${data.weather.weather[0].icon}@2x.png" 
+                        alt="${data.weather.weather[0].description}">
+                  Conditions:</b> ${data.weather.weather[0].description}
+              </p>`
             : ""}
           </div>
         ` : "";
