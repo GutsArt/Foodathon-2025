@@ -1,0 +1,92 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f4f8f5;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    color: #2e7d32;
+    margin-bottom: 0.5em;
+}
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+input, button {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+button {
+    background: #43a047;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+}
+button:hover {
+    background: #2e7d32;
+}
+.result {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.ok {
+    color: #2e7d32;
+    font-weight: bold;
+}
+.bad {
+    color: #c62828;
+    font-weight: bold;
+}
+/* Weather and Requirements */
+/* .weather {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.4;
+} */
+/* EcoCrop Information */
+.weather, .ecocrop {
+    margin-top: 15px;
+    background: #f1f8e9;
+    border-left: 4px solid #66bb6a;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+}
+.weather img {       
+    width: 28px; 
+    height: 28px; 
+    vertical-align: middle; 
+    margin-right: -5px;
+}
+
+h3 {
+    margin-top: 0;
+    color: #2e7d32;
+}
+.ecocrop p {
+    margin: 4px 0;
+}
+
+footer {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #555;
+}

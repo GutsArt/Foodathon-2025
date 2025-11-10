@@ -29,6 +29,10 @@ def recommend_ui():
     """
     return FileResponse("web/recommend.html")
 
-@app.get("/favicon.ico")
-def favicon():
-    return FileResponse("web/favicon.ico")
+# @app.get("/favicon.ico")
+# def favicon():
+#     return FileResponse("web/favicon.ico")
+
+# @app.get("/style.css")
+# def style():
+#     return FileResponse("web/style.css")
